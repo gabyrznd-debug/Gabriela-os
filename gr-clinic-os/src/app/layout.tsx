@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, IBM_Plex_Mono, Public_Sans } from "next/font/google";
 import "./globals.css";
-import { RoleProvider } from "@/lib/role-context";
-import { AppShell } from "@/components/AppShell";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -29,11 +27,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${fraunces.variable} ${publicSans.variable} ${plexMono.variable}`}>
-      <body className="font-sans antialiased bg-bg text-ink">
-        <RoleProvider>
-          <AppShell>{children}</AppShell>
-        </RoleProvider>
-      </body>
+      <body className="font-sans antialiased bg-bg text-ink">{children}</body>
     </html>
   );
 }

@@ -5,11 +5,12 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useRole } from "@/lib/role-context";
 import { MODULES, ROLES, modulesForRole, roleInfo } from "@/lib/roles";
+import { logout } from "@/app/login/actions";
 
 const GROUPS: Array<(typeof MODULES)[number]["grupo"]> = ["Meu trabalho", "Painéis", "Gestão", "Administração"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { role, setRole } = useRole();
+  const { role, setRole, authMode, nome } = useRole();
   const pathname = usePathname();
   const modules = modulesForRole(role);
   const info = roleInfo(role);
@@ -61,27 +62,42 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </nav>
   );
 
-  const roleSwitcher = (
-    <div className="border-t border-border p-4">
-      <label className="block font-mono text-[10.5px] uppercase tracking-wider text-ink-faint">
-        Perfil de demonstração
-      </label>
-      <select
-        value={role}
-        onChange={(e) => setRole(e.target.value as typeof role)}
-        className="mt-2 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-2 text-sm text-ink outline-none focus:border-accent"
-      >
-        {ROLES.map((r) => (
-          <option key={r.id} value={r.id}>
-            {r.label}
-          </option>
-        ))}
-      </select>
-      <p className="mt-2 text-[12px] text-ink-faint">
-        {info.pessoaExemplo} · {info.descricao}
-      </p>
-    </div>
-  );
+  const roleSwitcher =
+    authMode === "real" ? (
+      <div className="border-t border-border p-4">
+        <div className="font-mono text-[10.5px] uppercase tracking-wider text-ink-faint">Conectada</div>
+        <div className="mt-1.5 text-sm font-medium text-ink">{nome}</div>
+        <p className="mt-1 text-[12px] text-ink-faint">{info.label}</p>
+        <form action={logout} className="mt-3">
+          <button
+            type="submit"
+            className="w-full rounded-lg border border-border px-2.5 py-2 text-sm text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+          >
+            Sair
+          </button>
+        </form>
+      </div>
+    ) : (
+      <div className="border-t border-border p-4">
+        <label className="block font-mono text-[10.5px] uppercase tracking-wider text-ink-faint">
+          Perfil de demonstração
+        </label>
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value as typeof role)}
+          className="mt-2 w-full rounded-lg border border-border bg-surface-2 px-2.5 py-2 text-sm text-ink outline-none focus:border-accent"
+        >
+          {ROLES.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.label}
+            </option>
+          ))}
+        </select>
+        <p className="mt-2 text-[12px] text-ink-faint">
+          {info.pessoaExemplo} · {info.descricao}
+        </p>
+      </div>
+    );
 
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
