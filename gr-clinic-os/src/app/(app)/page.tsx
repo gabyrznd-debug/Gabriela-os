@@ -9,8 +9,11 @@ import { formatData } from "@/lib/format";
 import { DEMO_LEADS } from "@/lib/mock-data";
 
 export default function MeusResultadosPage() {
-  const { role } = useRole();
+  const { role, nome, authMode } = useRole();
   const info = roleInfo(role);
+  // Com login real, mostra o nome de verdade de quem está logada; no
+  // modo demonstração, cai no nome de exemplo do perfil selecionado.
+  const nomeExibido = nome ?? info.pessoaExemplo;
   const modules = modulesForRole(role).filter((m) => m.id !== "meus_resultados");
   const kpis = comercialKpis();
   const vencidos = followUpsVencidos("2026-07-09");
@@ -18,9 +21,17 @@ export default function MeusResultadosPage() {
   return (
     <div>
       <SectionLabel>Meus resultados</SectionLabel>
-      <h1 className="mt-2 font-display text-3xl font-semibold">Olá, {info.pessoaExemplo}</h1>
+      <h1 className="mt-2 font-display text-3xl font-semibold">Olá, {nomeExibido}</h1>
       <p className="mt-2 text-ink-muted">
-        Perfil selecionado: <strong className="text-ink">{info.label}</strong> — {info.descricao}
+        {authMode === "real" ? (
+          <>
+            Perfil: <strong className="text-ink">{info.label}</strong> — {info.descricao}
+          </>
+        ) : (
+          <>
+            Perfil selecionado: <strong className="text-ink">{info.label}</strong> — {info.descricao}
+          </>
+        )}
       </p>
 
       <DemoBanner />
